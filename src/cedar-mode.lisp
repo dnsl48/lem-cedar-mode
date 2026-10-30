@@ -102,9 +102,11 @@ Lines inside a string are left alone."
      :keymap *cedar-mode-keymap*
      :syntax-table *cedar-syntax-table*
      :mode-hook *cedar-mode-hook*)
+  ;; Four spaces matches cedar-language-server's formatter, which ignores the
+  ;; tabSize Lem sends, so indenting as you type agrees with lsp-document-format.
   (setf (variable-value 'enable-syntax-highlight) t
         (variable-value 'indent-tabs-mode) nil
-        (variable-value 'tab-width) 2
+        (variable-value 'tab-width) 4
         (variable-value 'calc-indent-function) 'calc-indent
         (variable-value 'line-comment) "//"
         (variable-value 'insertion-line-comment) "// "))

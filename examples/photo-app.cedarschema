@@ -1,38 +1,38 @@
 // Schema for the policies in photo-app.cedar.
 
 namespace PhotoApp {
-  type Address = {
-    city: String,
-    country?: String,
-  };
+    type Address = {
+        city: String,
+        country?: String,
+    };
 
-  entity UserGroup;
+    entity UserGroup;
 
-  entity User in [UserGroup] {
-    age: Long,
-    address?: Address,
-  };
+    entity User in [UserGroup] {
+        age: Long,
+        address?: Address,
+    };
 
-  entity Album;
+    entity Album;
 
-  entity Photo in [Album] {
-    owner: User,
-    private: Bool,
-    rating?: String,
-  } tags String;
+    entity Photo in [Album] {
+        owner: User,
+        private: Bool,
+        rating?: String,
+    } tags String;
 
-  entity Status enum ["draft", "published"];
+    entity Status enum ["draft", "published"];
 
-  action "viewPhoto" appliesTo {
-    principal: [User, UserGroup],
-    resource: Photo,
-    context: {
-      sourceIp: ipaddr,
-    }
-  };
+    action "viewPhoto" appliesTo {
+        principal: [User, UserGroup],
+        resource: Photo,
+        context: {
+            sourceIp: ipaddr,
+        }
+    };
 
-  action "editPhoto", "deletePhoto" appliesTo {
-    principal: User,
-    resource: Photo,
-  };
+    action "editPhoto", "deletePhoto" appliesTo {
+        principal: User,
+        resource: Photo,
+    };
 }

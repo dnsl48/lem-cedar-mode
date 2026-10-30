@@ -17,15 +17,11 @@
 ;;;; Helpers
 
 (defmacro with-cedar-buffer ((buffer content) &body body)
-  "Run BODY with BUFFER holding CONTENT under the Cedar syntax table."
+  "Run BODY with BUFFER in cedar-mode holding CONTENT, without starting a server."
   `(with-current-buffers ()
-     (let ((,buffer (make-buffer "*cedar-test*"
-                                 :temporary t
-                                 :enable-undo-p nil
-                                 :syntax-table *cedar-syntax-table*)))
-       (setf (variable-value 'enable-syntax-highlight :buffer ,buffer) t
-             (variable-value 'tab-width :buffer ,buffer) 2
-             (variable-value 'calc-indent-function :buffer ,buffer) 'calc-indent)
+     (let ((,buffer (make-buffer "*cedar-test*" :temporary t :enable-undo-p nil)))
+       (lem-lsp-mode:without-lsp-mode ()
+         (change-buffer-mode ,buffer 'cedar-mode))
        (insert-string (buffer-point ,buffer) ,content)
        ,@body)))
 
@@ -62,6 +58,12 @@
 
 (deftest cedar-mode-is-a-named-major-mode
   (ok (string= "Cedar" (mode-name 'cedar-mode))))
+
+(deftest cedar-mode-indents-like-the-official-formatter
+  (with-cedar-buffer (buffer "")
+    (ok (eql 4 (variable-value 'tab-width :buffer buffer)))
+    (ng (variable-value 'indent-tabs-mode :buffer buffer))
+    (ok (eq 'calc-indent (variable-value 'calc-indent-function :buffer buffer)))))
 
 (deftest policy-and-schema-files-open-in-cedar-mode
   (ok (eq 'cedar-mode (get-file-mode "policies.cedar")))
@@ -133,7 +135,9 @@ permit (principal, action, resource == Doc::\"when in doubt\");"))
 
 ;;;; Indentation
 
-(deftest example-policies-keep-their-indentation
+(deftest example-policies-keep-their-formatter-layout
+  ;; photo-app.cedar is verbatim lsp-document-format output from
+  ;; cedar-language-server, so this checks indenting agrees with the formatter.
   (let ((text (read-example "photo-app.cedar")))
     (ok (string= text (reindent text)))))
 
@@ -143,18 +147,22 @@ permit (principal, action, resource == Doc::\"when in doubt\");"))
 
 (deftest closers-line-up-with-their-opening-line
   (let ((text "namespace App {
-  entity User {
-    tags: Set<String>,
-  };
-}"))
+    entity User {
+        tags: Set<String>,
+    };
+}
+forbid (principal, action, resource)
+when {
+    resource.private
+};"))
     (ok (string= text (reindent text)))))
 
 (deftest brackets-in-strings-and-comments-are-ignored
   (let ((text "// a { that never closes
 permit (
-  principal,
-  action,
-  resource == Doc::\"(\"
+    principal,
+    action,
+    resource == Doc::\"(\"
 );
 forbid (principal, action, resource);"))
     (ok (string= text (reindent text)))))
