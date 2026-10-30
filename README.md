@@ -1,15 +1,16 @@
-# lem-cedar-mode
+# Cedar major mode for Lem
 
-[Cedar](https://www.cedarpolicy.com/) policy language support for the
-[Lem](https://github.com/lem-project/lem) editor:
+Editing support for [Cedar](https://www.cedarpolicy.com/) authorization
+policies and schemas in [Lem](https://github.com/lem-project/lem), with the
+official
+[cedar-language-server](https://github.com/cedar-policy/cedar/tree/main/cedar-language-server):
 
 - `cedar-mode` for `.cedar` policy files and `.cedarschema` schema files
 - regex-based highlighting of keywords, request variables, template slots,
   annotations, entity types, strings, numbers, and extension function calls
 - bracket-depth indentation of 4 spaces, the same as the official formatter,
   with closing brackets re-indented as you type them
-- language server integration with the official
-  [cedar-language-server](https://github.com/cedar-policy/cedar/tree/main/cedar-language-server)
+- diagnostics, completion, formatting, and more from the language server
 
 ## Language server
 

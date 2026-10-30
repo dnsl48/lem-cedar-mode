@@ -3,7 +3,7 @@
 ;; them here would make ASDF re-check (and possibly recompile) Lem's sources
 ;; whenever the checkout a binary was built from has moved on since the build.
 (defsystem "lem-cedar-mode"
-  :description "Cedar policy language support for Lem: highlighting, indentation and LSP"
+  :description "Cedar major mode for Lem"
   :author "Serge Latyntsev"
   :license "MIT"
   :version "0.1.0"
